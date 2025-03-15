@@ -1,0 +1,99 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: deschutesdesigngroup/laravel-k8s-tf-eks:latest
+    ports:
+      - "8080:8080"
+    environment:
+      APP_KEY: base64:xTgSQfLMNEczscmpp9JBReATIg6btVYOXHj9yUxYdUU=
+      CACHE_STORE: redis
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: laravel
+      DB_USERNAME: root
+      DB_PASSWORD: null
+      QUEUE_CONNECTION: redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: null
+      SESSION_DRIVER: redis
+    networks:
+      - laravel
+
+  mysql:
+    image: 'mysql/mysql-server:8.0'
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: laravel
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - 'laravel-mysql:/var/lib/mysql'
+    networks:
+      - laravel
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
+      retries: 3
+      timeout: 5s
+
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'laravel-redis:/data'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      retries: 3
+      timeout: 5s
+    networks:
+      - laravel
+
+  minio:
+    image: 'minio/minio:latest'
+    ports:
+      - '9000:9000'
+      - '8900:8900'
+    environment:
+      MINIO_ROOT_USER: 'laravel'
+      MINIO_ROOT_PASSWORD: 'password'
+    volumes:
+      - 'laravel-minio:/data'
+    networks:
+      - laravel
+    command: minio server /data --console-address ":8900"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      retries: 3
+      timeout: 5s
+
+  horizon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: deschutesdesigngroup/laravel-k8s-tf-eks:latest
+    command: ["php", "/var/www/html/artisan", "horizon"]
+    stop_signal: SIGTERM
+    healthcheck:
+      test: ["CMD", "healthcheck-horizon"]
+      start_period: 10s
+    environment:
+      QUEUE_CONNECTION: redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: null
+    networks:
+      - laravel
+
+volumes:
+  laravel-mysql:
+  laravel-minio:
+  laravel-redis:
+
+networks:
+  laravel:
+    driver: bridge

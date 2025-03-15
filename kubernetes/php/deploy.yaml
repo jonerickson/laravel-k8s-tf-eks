@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: laravel-k8s-tf-eks
+  name: php
+  labels:
+    app: laravel
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: php
+        tier: backend
+    spec:
+      containers:
+        - name: php
+          image: deschutesdesigngroup/laravel-k8s-tf-eks:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: laravel-config
+            - secretRef:
+                name: laravel-secret
+          volumeMounts:
+            - name: laravel-logs
+              mountPath: /var/www/html/storage/logs
+          ports:
+            - containerPort: 8080
+      volumes:
+        - name: laravel-logs
+          emptyDir: {}

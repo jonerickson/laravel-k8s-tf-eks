@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: laravel-k8s-tf-eks
+  name: queue
+  labels:
+    app: horizon
+    tier: queue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: queue
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: queue
+        tier: backend
+    spec:
+      containers:
+        - name: queue
+          image: deschutesdesigngroup/laravel-k8s-tf-eks:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - php
+          args:
+            - artisan
+            - horizon
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 400Mi
+          envFrom:
+            - configMapRef:
+                name: laravel-config
+            - secretRef:
+                name: laravel-secret

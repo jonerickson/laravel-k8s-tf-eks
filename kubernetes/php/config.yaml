@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    namespace: laravel-k8s-tf-eks
+    name: laravel-config
+data:
+    APP_URL: 'laravel-k8s-tf-eks.test'
+    CACHE_STORE: "redis"
+    DB_CONNECTION: "mysql"
+    DB_HOST: "mysql"
+    DB_PORT: "3306"
+    DB_DATABASE: "laravel"
+    DB_USERNAME: "root"
+    DB_PASSWORD: "null"
+    QUEUE_CONNECTION: "redis"
+    REDIS_HOST: "redis"
+    REDIS_PORT: "6379"
+    REDIS_PASSWORD: "null"
+    SESSION_DRIVER: "redis"
+
