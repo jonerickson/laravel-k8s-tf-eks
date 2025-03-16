@@ -1,0 +1,61 @@
+replicaCount: 2
+
+image:
+  repository: "deschutesdesigngroup/laravel-k8s-tf-eks"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  host: "laravel-k8s-tf-eks.test"
+  path: "/"
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+
+env:
+  - name: APP_ENV
+    value: "local"
+  - name: APP_DEBUG
+    value: "true"
+  - name: APP_KEY
+    value: "base64:xTgSQfLMNEczscmpp9JBReATIg6btVYOXHj9yUxYdUU="
+  - name: APP_URL
+    value: "http://laravel-k8s-tf-eks.test"
+  - name: CACHE_DRIVER
+    value: "redis"
+  - name: DB_CONNECTION
+    value: "mysql"
+  - name: DB_HOST
+    value: "mysql"
+  - name: DB_PORT
+    value: "3306"
+  - name: DB_DATABASE
+    value: "laravel"
+  - name: DB_USERNAME
+    value: "root"
+  - name: DB_PASSWORD
+    value: "null"
+  - name: QUEUE_CONNECTION
+    value: "redis"
+  - name: REDIS_HOST
+    value: "redis"
+  - name: REDIS_PORT
+    value: "6379"
+  - name: REDIS_PASSWORD
+    value: "null"
+  - name: SESSION_DRIVER
+    value: "redis"

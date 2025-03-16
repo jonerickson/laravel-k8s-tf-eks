@@ -1,0 +1,9 @@
+{{/* Helper functions */}}
+{{- define "mysql.name" -}}
+{{- .Chart.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "mysql.labels" -}}
+app.kubernetes.io/name: {{ include "mysql.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}

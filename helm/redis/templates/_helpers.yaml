@@ -1,0 +1,9 @@
+{{/* Helper functions */}}
+{{- define "redis.name" -}}
+{{- .Chart.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "redis.labels" -}}
+app.kubernetes.io/name: {{ include "redis.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}

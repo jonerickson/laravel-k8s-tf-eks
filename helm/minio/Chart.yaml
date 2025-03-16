@@ -1,0 +1,5 @@
+apiVersion: v2
+name: minio
+description: A Helm chart for deploying MinIO on Kubernetes
+version: 0.1.0
+appVersion: "RELEASE.2023-03-20T20-16-18Z"
