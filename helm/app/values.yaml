@@ -7,16 +7,22 @@ image:
 
 service:
   type: ClusterIP
-  port: 8080
+  port: 80
   targetPort: 8080
 
 ingress:
   enabled: true
-  host: "laravel-k8s-tf-eks.test"
+  type: alb
+  host: "laraveleks.deschutesdesigngroup.com"
   path: "/"
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /
+  alb:
+    scheme: "internet-facing"
+    targetType: "ip"
+    healthcheckPath: "/"
+    healthcheckInterval: "30"
+    successCodes: "200"
+  nginx:
+    rewriteTarget: "/"
 
 resources:
   limits:

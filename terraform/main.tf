@@ -41,7 +41,7 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 
 locals {
-    cluster_name = "laravel-k8s-tf-${random_string.suffix.result}"
+    cluster_name = format("%s-%s", var.app_name, random_string.suffix.result)
 }
 
 resource "random_string" "suffix" {

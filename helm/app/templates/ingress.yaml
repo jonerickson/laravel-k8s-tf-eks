@@ -7,13 +7,28 @@ metadata:
   labels:
     {{ include "app.labels" . | nindent 4 }}
   annotations:
-    {{ toYaml .Values.ingress.annotations | nindent 4 }}
+    {{- if eq .Values.ingress.type "alb" }}
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: {{ .Values.ingress.alb.scheme | default "internet-facing" | quote }}
+    alb.ingress.kubernetes.io/target-type: {{ .Values.ingress.alb.targetType | default "ip" | quote }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.ingress.alb.healthcheckPath | default "/" | quote }}
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: {{ .Values.ingress.alb.healthcheckInterval | default "30" | quote }}
+    alb.ingress.kubernetes.io/success-codes: {{ .Values.ingress.alb.successCodes | default "200" | quote }}
+    {{- else if eq .Values.ingress.type "nginx" }}
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.nginx.rewriteTarget | default "/" }}
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.type }}
   rules:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: {{ .Values.ingress.path }}
+          - path: {{ .Values.ingress.path | default "/" | quote }}
             pathType: Prefix
             backend:
               service:
