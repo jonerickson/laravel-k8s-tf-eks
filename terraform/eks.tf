@@ -4,6 +4,11 @@ module "eks" {
 
     cluster_name = local.cluster_name
     cluster_version = "1.32"
+    cluster_addons = {
+        aws-ebs-csi-driver = {
+            most_recent = true
+        }
+    }
 
     vpc_id = module.vpc.vpc_id
     subnet_ids = module.vpc.private_subnets
@@ -22,6 +27,11 @@ module "eks" {
             min_size = 1
             max_size = 3
             desired_size = 1
+
+            iam_role_additional_policies = {
+                AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+                AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+            }
         }
 
         two = {
@@ -32,37 +42,11 @@ module "eks" {
             min_size = 1
             max_size = 3
             desired_size = 1
+
+            iam_role_additional_policies = {
+                AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+                AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+            }
         }
     }
-}
-
-resource "aws_eks_fargate_profile" "fargate_profile" {
-    count             = var.enable_fargate ? 1 : 0
-    cluster_name      = module.eks.cluster_id
-    fargate_profile_name = "${local.cluster_name}-fargate-profile"
-    pod_execution_role_arn = aws_iam_role.fargate_pod_execution_role.arn
-    subnet_ids        = var.fargate_subnets
-    selectors = [
-        {
-            namespace = "default"
-        }
-    ]
-}
-
-resource "aws_iam_role" "fargate_pod_execution_role" {
-    name = "${local.cluster_name}-fargate-pod-execution-role"
-
-    assume_role_policy = jsonencode({
-        Version = "2012-10-17",
-        Statement = [
-            {
-                Action    = "sts:AssumeRole",
-                Principal = {
-                    Service = "eks-fargate-pods.amazonaws.com"
-                },
-                Effect    = "Allow",
-                Sid       = ""
-            }
-        ]
-    })
 }

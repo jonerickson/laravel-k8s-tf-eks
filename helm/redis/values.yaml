@@ -11,7 +11,7 @@ service:
 
 persistence:
   enabled: true
-  storageClass: ""
+  storageClass: "gp3"
   accessMode: ReadWriteOnce
   size: 1Gi
 

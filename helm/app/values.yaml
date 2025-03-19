@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: "deschutesdesigngroup/laravel-k8s-tf-eks"
+  repository: "037826224314.dkr.ecr.us-west-2.amazonaws.com/laravel-k8s-tf-eks"
   tag: "latest"
   pullPolicy: IfNotPresent
 
@@ -34,7 +34,7 @@ resources:
 
 env:
   - name: APP_ENV
-    value: "local"
+    value: "production"
   - name: APP_DEBUG
     value: "true"
   - name: APP_KEY

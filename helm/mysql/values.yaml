@@ -11,9 +11,9 @@ service:
 
 persistence:
   enabled: true
-  storageClass: ""
+  storageClass: "gp3"
   accessMode: ReadWriteOnce
-  size: 1Gi
+  size: 10Gi
 
 mysql:
   rootPassword: "password"
