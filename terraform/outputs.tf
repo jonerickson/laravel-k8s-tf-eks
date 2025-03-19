@@ -27,3 +27,18 @@ output "dns_validation_records" {
     description = "The DNS validation records for the ACM certificate."
     value = aws_acm_certificate.app_certificate.domain_validation_options
 }
+
+output "deploy_role_arn" {
+    description = "The IAM role that can be used to deploy the application."
+    value = aws_iam_role.deploy_role.arn
+}
+
+output "ecr_repository_url" {
+    description = "The URL of the ECR repository."
+    value = aws_ecr_repository.laravel.repository_url
+}
+
+output "ecr_repository_id" {
+    description = "The ID of the ECR repository."
+    value = aws_ecr_repository.laravel.registry_id
+}
