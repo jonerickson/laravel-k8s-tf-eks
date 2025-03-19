@@ -31,10 +31,12 @@ jobs:
           terraform_version: 1.11.2
 
       - name: Terraform Init
+        working-directory: ./terraform
         run: terraform init
 
       - name: Terraform Plan
         id: plan
+        working-directory: ./terraform
         run: |
           terraform plan -out=tfplan -detailed-exitcode
           echo "PLAN_EXIT_CODE=$?" >> $GITHUB_ENV
@@ -43,12 +45,14 @@ jobs:
 
       - name: Terraform Apply
         if: env.PLAN_EXIT_CODE == '2'
+        working-directory: ./terraform
         run: terraform apply -auto-approve tfplan
         env:
           TF_VAR_region: ${{ env.AWS_REGION }}
 
       - name: Get ECR Repository URI
         id: ecr
+        working-directory: ./terraform
         run: echo "ECR_REPOSITORY=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
