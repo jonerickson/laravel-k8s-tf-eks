@@ -15,3 +15,9 @@ variable "region" {
     type = string
     default = "us-west-2"
 }
+
+variable "repository_name" {
+    description = "The name of the ECR repository."
+    type = string
+    default = "laravel-k8s-tf-eks"
+}

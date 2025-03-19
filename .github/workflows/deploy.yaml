@@ -51,10 +51,12 @@ jobs:
         env:
           TF_VAR_region: ${{ env.AWS_REGION }}
 
-      - name: Get ECR Repository URI
+      - name: Get ECR Repository Information
         id: ecr
         working-directory: ./terraform
-        run: echo "ECR_REPOSITORY=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
+        run: |
+          echo "ECR_REPOSITORY=$(terraform output -raw repository_name)" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
         run: |
@@ -66,8 +68,8 @@ jobs:
 
       - name: Tag Docker Image
         run: |
-          docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:latest
+          docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.ECR_REPOSITORY_URL }}:latest
 
       - name: Push Docker Image to ECR
         run: |
-          docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:latest
+          docker push ${{ env.ECR_REPOSITORY_URL }}}:latest
