@@ -1,4 +1,4 @@
-name: deploy
+name: Deploy
 
 on:
   push:
@@ -12,6 +12,7 @@ env:
 
 jobs:
   terraform:
+    name: Deploy Application
     runs-on: ubuntu-latest
 
     steps:
@@ -24,6 +25,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

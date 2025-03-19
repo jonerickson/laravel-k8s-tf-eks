@@ -37,6 +37,8 @@ spec:
               value: {{ .Values.mysql.rootPassword | quote }}
             - name: MYSQL_DATABASE
               value: {{ .Values.mysql.database | quote }}
+            - name: MYSQL_ROOT_HOST
+              value: "%"
             {{- end }}
           resources:
             {{ toYaml .Values.resources | nindent 12 }}

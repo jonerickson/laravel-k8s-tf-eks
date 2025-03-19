@@ -15,6 +15,18 @@ spec:
       labels:
         {{ include "app.labels" . | nindent 8 }}
     spec:
+      initContainers:
+      - name: migrate-database
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["php", "artisan", "migrate", "--force"]
+        env:
+          {{ range .Values.env }}
+          - name: {{ .name }}
+            value: {{ .value | quote }}
+          {{ end }}
+        resources:
+          {{ toYaml .Values.resources | nindent 12 }}
       containers:
         - name: laravel
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

@@ -32,6 +32,12 @@ resources:
     cpu: "200m"
     memory: "256Mi"
 
+initCommands:
+  migrate:
+    - "php artisan migrate --force"
+  optimize:
+    - "php artisan optimize"
+
 env:
   - name: APP_ENV
     value: "production"
@@ -54,7 +60,7 @@ env:
   - name: DB_USERNAME
     value: "root"
   - name: DB_PASSWORD
-    value: "null"
+    value: "password"
   - name: QUEUE_CONNECTION
     value: "redis"
   - name: REDIS_HOST
