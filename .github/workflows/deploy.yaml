@@ -19,6 +19,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.IAM_DEPLOY_ROLE }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -32,17 +40,9 @@ jobs:
         id: ecr
         working-directory: ./terraform
         run: |
-          echo "ECR_REPOSITORY=$(terraform output -raw repository_name)" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY=$(terraform output -raw repository_id)" >> $GITHUB_ENV
           echo "ECR_REPOSITORY_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
           echo "IAM_DEPLOY_ROLE=$(terraform output -raw deploy_role_arn)" >> $GITHUB_ENV
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ env.IAM_DEPLOY_ROLE }}
 
       - name: Terraform Plan
         id: plan
