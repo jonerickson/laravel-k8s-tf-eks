@@ -12,19 +12,13 @@ WORKDIR /var/www/html/
 COPY ./src ./
 COPY ./src/.env.example ./.env
 
+RUN composer install --optimize-autoloader --no-interaction --prefer-dist
+
 RUN npm ci &&  \
     npm run build && \
     rm -rf node_modules
 
 RUN chown -R www-data:www-data /var/www/html
-
-USER www-data
-
-FROM base as development
-
-USER root
-
-RUN composer install --optimize-autoloader --no-interaction --prefer-dist
 
 USER www-data
 
