@@ -21,3 +21,13 @@ variable "repository_name" {
     type = string
     default = "laravel-k8s-tf-eks"
 }
+
+variable "github_organization" {
+    description = "The GitHub organization that owns the repository."
+    type = string
+}
+
+variable "github_repository" {
+    description = "The name of the GitHub repository deploying the application."
+    type = string
+}

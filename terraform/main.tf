@@ -39,6 +39,7 @@ provider "aws" {
 }
 
 data "aws_availability_zones" "available" {}
+data "aws_caller_identity" "current" {}
 
 locals {
     cluster_name = format("%s-%s", var.app_name, random_string.suffix.result)
@@ -47,5 +48,48 @@ locals {
 resource "random_string" "suffix" {
     length = 8
     special = false
+}
+
+resource "aws_iam_role" "github_actions_role" {
+    name = "GithubActionsRole"
+
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Effect = "Allow"
+                Principal = {
+                    Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
+                }
+                Action = "sts:AssumeRoleWithWebIdentity"
+                Condition = {
+                    StringEquals = {
+                        "token.actions.githubusercontent.com:sub" = "repo:${var.github_organization}/${var.github_repository}:ref:refs/heads/main"
+                    }
+                }
+            }
+        ]
+    })
+}
+
+resource "aws_iam_policy" "github_actions_policy" {
+    name        = "GitHubActionsPolicy"
+    description = "Permissions for GitHub Actions"
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Effect   = "Allow"
+                Action   = ["ec2:*", "s3:*", "iam:*", "kms:*", "eks:*"]
+                Resource = "*"
+            }
+        ]
+    })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_github_actions_policy" {
+    role = aws_iam_role.github_actions_role.name
+    policy_arn = aws_iam_policy.github_actions_policy.arn
 }
 

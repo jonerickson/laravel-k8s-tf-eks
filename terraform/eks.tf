@@ -12,7 +12,7 @@ module "eks" {
 
     kms_key_administrators = [
         data.aws_caller_identity.current.arn,
-        aws_iam_role.deploy_role.arn
+        aws_iam_role.github_actions_role.arn
     ]
 
     vpc_id = module.vpc.vpc_id
@@ -54,23 +54,4 @@ module "eks" {
             }
         }
     }
-}
-
-data "aws_caller_identity" "current" {}
-
-resource "aws_iam_role" "deploy_role" {
-    name = "eks-deploy-role"
-
-    assume_role_policy = jsonencode({
-        Version = "2012-10-17"
-        Statement = [
-            {
-                Effect = "Allow"
-                Principal = {
-                    AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-                }
-                Action = "sts:AssumeRole"
-            }
-        ]
-    })
 }
