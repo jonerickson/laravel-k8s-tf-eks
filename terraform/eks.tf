@@ -12,7 +12,7 @@ module "eks" {
 
     kms_key_administrators = [
         data.aws_caller_identity.current.arn,
-        aws_iam_role.github_actions_role.arn
+        module.iam.github_actions_role,
     ]
 
     vpc_id = module.vpc.vpc_id
