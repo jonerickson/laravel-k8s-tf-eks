@@ -81,12 +81,6 @@ module "helm" {
     docker_image_repository_name = module.ecr.repository_name
 }
 
-module "iam" {
-    source = "./modules/iam"
-    github_organization = var.github_organization
-    github_repository = var.github_repository
-}
-
 module "s3" {
     source = "./modules/s3"
     bucket_name = var.app_name
