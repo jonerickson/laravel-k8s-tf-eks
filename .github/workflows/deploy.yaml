@@ -9,7 +9,7 @@ on:
 env:
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   AWS_REGION: us-west-2
-  TF_VAR_region: ${{ env.AWS_REGION }}
+  TF_VAR_region: us-west-2
 
 jobs:
   terraform:
