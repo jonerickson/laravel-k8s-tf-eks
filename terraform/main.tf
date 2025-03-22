@@ -77,6 +77,8 @@ module "eks" {
 module "helm" {
     source = "./modules/helm"
     depends_on = [module.eks, module.s3, module.ecr, module.acm]
+    docker_image = module.ecr.repository_url
+    docker_image_repository_name = module.ecr.repository_name
 }
 
 module "iam" {

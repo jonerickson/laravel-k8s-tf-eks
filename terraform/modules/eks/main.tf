@@ -95,7 +95,7 @@ resource "helm_release" "elb_controller" {
   }
   set {
     name  = "serviceAccount.create"
-    value = "falsw"
+    value = "true"
   }
   set {
     name  = "serviceAccount.name"
