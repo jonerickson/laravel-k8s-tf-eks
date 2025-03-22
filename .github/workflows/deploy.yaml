@@ -63,7 +63,7 @@ jobs:
 
       - name: Push Docker Image to ECR
         run: |
-          docker push ${{ env.ECR_REPOSITORY_URL }}}:latest
+          docker push ${{ env.ECR_REPOSITORY_URL }}:latest
 
       - name: Terraform Plan Full Deploy
         working-directory: ./terraform
