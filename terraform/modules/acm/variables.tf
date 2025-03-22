@@ -1,3 +1,4 @@
 variable "host" {
-    type = string
+  description = "The domain name for the certificate."
+  type        = string
 }

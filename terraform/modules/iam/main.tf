@@ -27,7 +27,7 @@ resource "aws_iam_role" "github_actions_role" {
 }
 
 resource "aws_iam_policy" "github_actions_policy" {
-  name = "GitHubActionsPolicy"
+  name        = "GitHubActionsPolicy"
   description = "Permissions for GitHub Actions"
 
   policy = jsonencode({
@@ -35,7 +35,7 @@ resource "aws_iam_policy" "github_actions_policy" {
     Statement = [
       {
         Effect   = "Allow"
-        Action   = ["*"]
+        Action = ["*"]
         Resource = "*"
       }
     ]
@@ -43,12 +43,12 @@ resource "aws_iam_policy" "github_actions_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_github_actions_policy" {
-  role = aws_iam_role.github_actions_role.name
+  role       = aws_iam_role.github_actions_role.name
   policy_arn = aws_iam_policy.github_actions_policy.arn
 }
 
 resource "aws_iam_openid_connect_provider" "github" {
-  url  = "https://token.actions.githubusercontent.com"
+  url = "https://token.actions.githubusercontent.com"
   thumbprint_list = [data.tls_certificate.github.certificates[0].sha1_fingerprint]
-  client_id_list  = ["sts.amazonaws.com"]
+  client_id_list = ["sts.amazonaws.com"]
 }

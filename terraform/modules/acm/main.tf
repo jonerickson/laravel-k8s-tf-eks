@@ -1,5 +1,5 @@
 resource "aws_acm_certificate" "app_certificate" {
-  domain_name = var.host
+  domain_name       = var.host
   validation_method = "DNS"
 
   lifecycle {

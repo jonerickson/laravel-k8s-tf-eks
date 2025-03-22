@@ -1,8 +1,16 @@
+terraform {
+  required_providers {
+    external = {
+      source  = "hashicorp/external"
+      version = "2.3.4"
+    }
+  }
+}
 module "eks" {
-  source = "terraform-aws-modules/eks/aws"
-  version = "19.0.4"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "20.34.0"
 
-  cluster_name = var.cluster_name
+  cluster_name    = var.cluster_name
   cluster_version = "1.32"
   cluster_addons = {
     aws-ebs-csi-driver = {
@@ -15,8 +23,8 @@ module "eks" {
     var.deploy_role_arn,
   ]
 
-  vpc_id = var.vpc_id
-  subnet_ids = var.vpc_private_ids
+  vpc_id                         = var.vpc_id
+  subnet_ids                     = var.vpc_private_ids
   cluster_endpoint_public_access = true
 
   eks_managed_node_group_defaults = {
@@ -29,12 +37,12 @@ module "eks" {
 
       instance_types = ["t3.small"]
 
-      min_size = 1
-      max_size = 3
+      min_size     = 1
+      max_size     = 3
       desired_size = 1
 
       iam_role_additional_policies = {
-        AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+        AmazonEBSCSIDriverPolicy           = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
         AWSLoadBalancerControllerIAMPolicy = aws_iam_policy.elb_controller_policy.arn
       }
@@ -45,12 +53,12 @@ module "eks" {
 
       instance_types = ["t3.small"]
 
-      min_size = 1
-      max_size = 3
+      min_size     = 1
+      max_size     = 3
       desired_size = 1
 
       iam_role_additional_policies = {
-        AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+        AmazonEBSCSIDriverPolicy           = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
         AWSLoadBalancerControllerIAMPolicy = aws_iam_policy.elb_controller_policy.arn
       }
@@ -93,4 +101,13 @@ resource "helm_release" "elb_controller" {
     name  = "serviceAccount.name"
     value = "aws-load-balancer-controller"
   }
+}
+
+data "external" "elb_endpoint" {
+  program = [
+    "bash", "-c", <<EOT
+  echo '{"address": "'$(kubectl get ingress app -n default -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')'",
+"host": "'$(kubectl get ingress app -n default -o jsonpath='{.spec.rules[0].host}')'"}'
+EOT
+  ]
 }

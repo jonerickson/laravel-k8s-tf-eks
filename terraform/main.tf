@@ -2,7 +2,7 @@ terraform {
     required_providers {
         aws = {
             source  = "hashicorp/aws"
-            version = "~> 4.16"
+            version = "~> 5.83"
         }
 
         random = {
@@ -36,6 +36,11 @@ provider "aws" {
 provider "kubernetes" {
     host = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+    exec {
+        api_version = "client.authentication.k8s.io/v1beta1"
+        args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+        command = "aws"
+    }
 }
 
 provider "helm" {
@@ -64,9 +69,14 @@ module "eks" {
     source = "./modules/eks"
     cluster_name = local.cluster_name
     region = var.region
-    vpc_id = module.vpc.vpc_id
-    vpc_private_ids = module.vpc.vpc_private_subnets
+    vpc_id = module.vpc.id
+    vpc_private_ids = module.vpc.private_subnets
     deploy_role_arn = module.iam.github_actions_role_arn
+}
+
+module "helm" {
+    source = "./modules/helm"
+    depends_on = [module.eks, module.s3, module.ecr, module.acm]
 }
 
 module "iam" {
@@ -75,10 +85,22 @@ module "iam" {
     github_repository = var.github_repository
 }
 
+module "s3" {
+    source = "./modules/s3"
+    bucket_name = var.app_name
+}
+
 module "vpc" {
     source = "./modules/vpc"
-    app_name = var.app_name
-    cluster_name = local.cluster_name
+    name = var.app_name
+    public_subnet_tags = {
+        "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+        "kubernetes.io/role/elb" = 1
+    }
+    private_subnet_tags = {
+        "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+        "kubernetes.io/role/internal-elb" = 1
+    }
 }
 
 locals {

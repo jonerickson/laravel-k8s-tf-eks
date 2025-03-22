@@ -1,7 +1,9 @@
 variable "github_organization" {
-  type = string
+  description = "The name of the GitHub organization owner."
+  type        = string
 }
 
 variable "github_repository" {
-  type = string
+  description = "The name of the GitHub repository."
+  type        = string
 }
