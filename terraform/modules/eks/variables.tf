@@ -17,8 +17,3 @@ variable "vpc_private_ids" {
   description = "The list of private subnet IDs the EKS cluster will be deployed to."
   type = list(string)
 }
-
-variable "deploy_role_arn" {
-  description = "The ARN of the IAM role that EKS will use to create resources."
-  type        = string
-}

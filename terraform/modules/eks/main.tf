@@ -6,6 +6,7 @@ terraform {
     }
   }
 }
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "20.34.0"
@@ -20,7 +21,6 @@ module "eks" {
 
   kms_key_administrators = [
     data.aws_caller_identity.current.arn,
-    var.deploy_role_arn,
   ]
 
   vpc_id                         = var.vpc_id

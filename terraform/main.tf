@@ -71,7 +71,6 @@ module "eks" {
     region = var.region
     vpc_id = module.vpc.id
     vpc_private_ids = module.vpc.private_subnets
-    deploy_role_arn = module.iam.github_actions_role_arn
 }
 
 module "helm" {
